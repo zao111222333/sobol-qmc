@@ -11,7 +11,7 @@ documentation = "https://docs.rs/sobol-qmc"
 description = "A Sobol sequence generator for Rust"
 categories = ["algorithms","science","simulation"]
 keywords = ["sobol","low-discrepancy","mcmc","monte-carlo","quasirandom"]
-exclude = ["/tests","/benches","/examples","/.github"]
+include = ["/src", "build.rs", "README.md"]
 
 [dependencies]
 num-traits = "0.2"

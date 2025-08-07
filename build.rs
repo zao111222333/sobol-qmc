@@ -101,17 +101,21 @@ fn gen_joe_kuo_d6() {
 
 fn gen_ref_seq() {
     fn load_ref_seq(filename: &str) -> Vec<Vec<f32>> {
-        let mut file = File::open(filename).expect("Can't open reference sequence file");
-        let mut decoder = Decoder::new(&mut file).unwrap();
-        BufReader::new(&mut decoder)
-            .lines()
-            .map(|res| {
-                res.unwrap()
-                    .split_whitespace()
-                    .map(|v| v.parse::<f32>().unwrap())
-                    .collect()
-            })
-            .collect()
+        if let Ok(mut file) = File::open(filename) {
+            let mut decoder = Decoder::new(&mut file).unwrap();
+            BufReader::new(&mut decoder)
+                .lines()
+                .map(|res| {
+                    res.unwrap()
+                        .split_whitespace()
+                        .map(|v| v.parse::<f32>().unwrap())
+                        .collect()
+                })
+                .collect()
+        } else {
+            // for release crate package, no ref_seq file
+            vec![vec![]]
+        }
     }
     fn ref_seq2token(ref_seq: Vec<Vec<f32>>) -> TokenStream {
         let tokens: Vec<_> = ref_seq
