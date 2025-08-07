@@ -1,6 +1,6 @@
 # sobol-qmc
 
-![Crates.io](https://img.shields.io/crates/v/sobol-qmc)
+[![crates.io](https://shields.io/crates/v/sobol-qmc.svg?style=flat-square&label=crates.io)](https://crates.io/crates/sobol-qmc)
 [![documentation](https://docs.rs/sobol/badge.svg)](https://docs.rs/sobol-qmc)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
