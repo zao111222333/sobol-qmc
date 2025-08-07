@@ -1,13 +1,10 @@
-# sobol
+# sobol-qmc
 
-![Crates.io](https://img.shields.io/crates/v/sobol)
-[![documentation](https://docs.rs/sobol/badge.svg)](https://docs.rs/sobol)
-![minimum rustc 1.33](https://img.shields.io/badge/rustc-1.33+-red.svg)
-![Rust](https://github.com/Wsiegenthaler/sobol-rs/workflows/Rust/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/Wsiegenthaler/sobol-rs/badge.svg?branch=master)](https://coveralls.io/github/Wsiegenthaler/sobol-rs?branch=master)
+![Crates.io](https://img.shields.io/crates/v/sobol-qmc)
+[![documentation](https://docs.rs/sobol/badge.svg)](https://docs.rs/sobol-qmc)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-*A Sobol sequence generator for Rust*
+*A Sobol sequence generator for Rust, forked from [sobol-rs](https://github.com/Wsiegenthaler/sobol-rs)*
 
 This crate provides Sobol low-discrepancy quasirandom sequences which are useful for integration and other tasks. The sequence can cover a domain evenly with as little as a few points and will continue to progressively fill the space as more points are added.
 
@@ -27,14 +24,12 @@ cargo install sobol
 
 Print the first 100 points from a 3-dimensional sequence:
 
-```rust
-extern crate sobol;
-  
-use sobol::Sobol;
-use sobol::params::JoeKuoD6;
+```rust  
+use sobol_qmc::Sobol;
+use sobol_qmc::params::JoeKuoD6;
 
 fn main() {
-    let params = JoeKuoD6::minimal();
+    let params = JoeKuoD6::STANDARD;
     let seq = Sobol::<f32>::new(3, &params);
     
     for point in seq.take(100) {
@@ -47,15 +42,15 @@ In this example each component of the sequence is a 32-bit float but *sobol* als
 
 ## Initialization Values
 
-Initialization values (aka "parameters") supporting up to 21,201 dimensions are provided courtesy of Stephen Joe and Frances Kuo ([source](https://web.maths.unsw.edu.au/~fkuo/sobol/)) and are accessible via `sobol::params::JoeKuoD6`. Custom initialization values can be used by implementing the `sobol::SobolParams` trait.
+Initialization values (aka "parameters") supporting up to 21,201 dimensions are provided courtesy of Stephen Joe and Frances Kuo ([source](https://web.maths.unsw.edu.au/~fkuo/sobol/)) and are accessible via `sobol_qmc::params::JoeKuoD6`. Custom initialization values can be used by implementing the `sobol_qmc::SobolParams` trait.
 
 If imported into your project, the provided `JoeKuoD6` parameters are automatically embedded into your project binary. To reduce the amount of data added to your project, `JoeKuoD6` provides three otherwise identical parameter sets which can be selected from according to the dimensionality required by your sequences:
 
 | Source | Supported Dims | Approx. Size |
 | ------ | -------------- | ------------ |
-| `JoeKuoD6::minimal()` | 100  | 1kb |
-| `JoeKuoD6::standard()` | 1,000 | 20kb |
-| `JoeKuoD6::extended()` | 21,201  | 690kb |
+| `JoeKuoD6::MINIMAL` | 100  | 1kb |
+| `JoeKuoD6::STANDARD` | 1,000 | 20kb |
+| `JoeKuoD6::EXTENDED` | 21,201  | 690kb |
 
 ## See also
 

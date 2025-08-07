@@ -1,315 +1,349 @@
-extern crate sobol;
-extern crate libflate;
-#[macro_use] extern crate lazy_static;
+include!(concat!(env!("OUT_DIR"), "/gen_ref_seq.rs"));
 
-use crate::sobol::*;
-use crate::sobol::params::JoeKuoD6;
+use sobol_qmc::params::JoeKuoD6;
+use sobol_qmc::*;
 
-use std::fs::File;
 use std::fmt::Display;
 
-use std::io::{BufRead, BufReader};
-use libflate::gzip::Decoder;
-
-
-lazy_static! {
-    /** High-dimensional reference sequence for validation */
-    static ref REF_SEQ_LO: Vec<Vec<f32>> = load_ref_seq("./tests/data/ref_seq_lo.tsv.gz");
-    
-    /** Low-dimensional reference sequence for validation */
-    static ref REF_SEQ_HI: Vec<Vec<f32>> = load_ref_seq("./tests/data/ref_seq_hi.tsv.gz");
+/// Validate low-dimensional `f32` sequence
+#[test]
+fn validate_f32_hires_lodim() {
+    validate::<f32>(REF_SEQ_LO, None);
 }
 
-
-/** Validate low-dimensional `f32` sequence */
-#[test] fn validate_f32_hires_lodim() {
-    validate::<f32>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `f64` sequence
+#[test]
+fn validate_f64_hires_lodim() {
+    validate::<f64>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `f64` sequence */
-#[test] fn validate_f64_hires_lodim() {
-    validate::<f64>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `u8` sequence
+#[test]
+fn validate_u8_hires_lodim() {
+    validate::<u8>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `u8` sequence */
-#[test] fn validate_u8_hires_lodim() {
-    validate::<u8>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `u16` sequence
+#[test]
+fn validate_u16_hires_lodim() {
+    validate::<u16>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `u16` sequence */
-#[test] fn validate_u16_hires_lodim() {
-    validate::<u16>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `u32` sequence
+#[test]
+fn validate_u32_hires_lodim() {
+    validate::<u32>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `u32` sequence */
-#[test] fn validate_u32_hires_lodim() {
-    validate::<u32>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `u64` sequence
+#[test]
+fn validate_u64_hires_lodim() {
+    validate::<u64>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `u64` sequence */
-#[test] fn validate_u64_hires_lodim() {
-    validate::<u64>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `u128` sequence
+#[test]
+fn validate_u128_hires_lodim() {
+    validate::<u128>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `u128` sequence */
-#[test] fn validate_u128_hires_lodim() {
-    validate::<u128>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `i8` sequence
+#[test]
+fn validate_i8_hires_lodim() {
+    validate::<i8>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `i8` sequence */
-#[test] fn validate_i8_hires_lodim() {
-    validate::<i8>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `i16` sequence
+#[test]
+fn validate_i16_hires_lodim() {
+    validate::<i16>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `i16` sequence */
-#[test] fn validate_i16_hires_lodim() {
-    validate::<i16>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `i32` sequence
+#[test]
+fn validate_i32_hires_lodim() {
+    validate::<i32>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `i32` sequence */
-#[test] fn validate_i32_hires_lodim() {
-    validate::<i32>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `i64` sequence
+#[test]
+fn validate_i64_hires_lodim() {
+    validate::<i64>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `i64` sequence */
-#[test] fn validate_i64_hires_lodim() {
-    validate::<i64>(&REF_SEQ_LO, None);
+/// Validate low-dimensional `i128` sequence
+#[test]
+fn validate_i128_hires_lodim() {
+    validate::<i128>(REF_SEQ_LO, None);
 }
 
-/** Validate low-dimensional `i128` sequence */
-#[test] fn validate_i128_hires_lodim() {
-    validate::<i128>(&REF_SEQ_LO, None);
+/// Validate high-dimensional `f32` sequence
+#[test]
+fn validate_f32_hires_hidim() {
+    validate::<f32>(REF_SEQ_HI, None);
 }
 
-
-/** Validate high-dimensional `f32` sequence */
-#[test] fn validate_f32_hires_hidim() {
-    validate::<f32>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `f64` sequence
+#[test]
+fn validate_f64_hires_hidim() {
+    validate::<f64>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `f64` sequence */
-#[test] fn validate_f64_hires_hidim() {
-    validate::<f64>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `u8` sequence
+#[test]
+fn validate_u8_hires_hidim() {
+    validate::<u8>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `u8` sequence */
-#[test] fn validate_u8_hires_hidim() {
-    validate::<u8>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `u16` sequence
+#[test]
+fn validate_u16_hires_hidim() {
+    validate::<u16>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `u16` sequence */
-#[test] fn validate_u16_hires_hidim() {
-    validate::<u16>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `u32` sequence
+#[test]
+fn validate_u32_hires_hidim() {
+    validate::<u32>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `u32` sequence */
-#[test] fn validate_u32_hires_hidim() {
-    validate::<u32>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `u64` sequence
+#[test]
+fn validate_u64_hires_hidim() {
+    validate::<u64>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `u64` sequence */
-#[test] fn validate_u64_hires_hidim() {
-    validate::<u64>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `u128` sequence
+#[test]
+fn validate_u128_hires_hidim() {
+    validate::<u128>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `u128` sequence */
-#[test] fn validate_u128_hires_hidim() {
-    validate::<u128>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `i8` sequence
+#[test]
+fn validate_i8_hires_hidim() {
+    validate::<i8>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `i8` sequence */
-#[test] fn validate_i8_hires_hidim() {
-    validate::<i8>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `i16` sequence
+#[test]
+fn validate_i16_hires_hidim() {
+    validate::<i16>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `i16` sequence */
-#[test] fn validate_i16_hires_hidim() {
-    validate::<i16>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `i32` sequence
+#[test]
+fn validate_i32_hires_hidim() {
+    validate::<i32>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `i32` sequence */
-#[test] fn validate_i32_hires_hidim() {
-    validate::<i32>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `i64` sequence
+#[test]
+fn validate_i64_hires_hidim() {
+    validate::<i64>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `i64` sequence */
-#[test] fn validate_i64_hires_hidim() {
-    validate::<i64>(&REF_SEQ_HI, None);
+/// Validate high-dimensional `i128` sequence
+#[test]
+fn validate_i128_hires_hidim() {
+    validate::<i128>(REF_SEQ_HI, None);
 }
 
-/** Validate high-dimensional `i128` sequence */
-#[test] fn validate_i128_hires_hidim() {
-    validate::<i128>(&REF_SEQ_HI, None);
+/// Validate low-resolution low-dimensional `f32` sequence
+#[test]
+fn validate_f32_lores_lodim() {
+    validate::<f32>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `f32` sequence */
-#[test] fn validate_f32_lores_lodim() {
-    validate::<f32>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `f64` sequence
+#[test]
+fn validate_f64_lores_lodim() {
+    validate::<f64>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `f64` sequence */
-#[test] fn validate_f64_lores_lodim() {
-    validate::<f64>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `u8` sequence
+#[test]
+fn validate_u8_lores_lodim() {
+    validate::<u8>(REF_SEQ_LO, Some(5));
 }
 
-/** Validate low-resolution low-dimensional `u8` sequence */
-#[test] fn validate_u8_lores_lodim() {
-    validate::<u8>(&REF_SEQ_LO, Some(5));
+/// Validate low-resolution low-dimensional `u16` sequence
+#[test]
+fn validate_u16_lores_lodim() {
+    validate::<u16>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `u16` sequence */
-#[test] fn validate_u16_lores_lodim() {
-    validate::<u16>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `u32` sequence
+#[test]
+fn validate_u32_lores_lodim() {
+    validate::<u32>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `u32` sequence */
-#[test] fn validate_u32_lores_lodim() {
-    validate::<u32>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `u64` sequence
+#[test]
+fn validate_u64_lores_lodim() {
+    validate::<u64>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `u64` sequence */
-#[test] fn validate_u64_lores_lodim() {
-    validate::<u64>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `u128` sequence
+#[test]
+fn validate_u128_lores_lodim() {
+    validate::<u128>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `u128` sequence */
-#[test] fn validate_u128_lores_lodim() {
-    validate::<u128>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `i8` sequence
+#[test]
+fn validate_i8_lores_lodim() {
+    validate::<i8>(REF_SEQ_LO, Some(5));
 }
 
-/** Validate low-resolution low-dimensional `i8` sequence */
-#[test] fn validate_i8_lores_lodim() {
-    validate::<i8>(&REF_SEQ_LO, Some(5));
+/// Validate low-resolution low-dimensional `i16` sequence
+#[test]
+fn validate_i16_lores_lodim() {
+    validate::<i16>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `i16` sequence */
-#[test] fn validate_i16_lores_lodim() {
-    validate::<i16>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `i32` sequence
+#[test]
+fn validate_i32_lores_lodim() {
+    validate::<i32>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `i32` sequence */
-#[test] fn validate_i32_lores_lodim() {
-    validate::<i32>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `i64` sequence
+#[test]
+fn validate_i64_lores_lodim() {
+    validate::<i64>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `i64` sequence */
-#[test] fn validate_i64_lores_lodim() {
-    validate::<i64>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution low-dimensional `i128` sequence
+#[test]
+fn validate_i128_lores_lodim() {
+    validate::<i128>(REF_SEQ_LO, Some(11));
 }
 
-/** Validate low-resolution low-dimensional `i128` sequence */
-#[test] fn validate_i128_lores_lodim() {
-    validate::<i128>(&REF_SEQ_LO, Some(11));
+/// Validate low-resolution high-dimensional `f32` sequence
+#[test]
+fn validate_f32_lores_hidim() {
+    validate::<f32>(REF_SEQ_HI, Some(11));
 }
 
-
-/** Validate low-resolution high-dimensional `f32` sequence */
-#[test] fn validate_f32_lores_hidim() {
-    validate::<f32>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `f64` sequence
+#[test]
+fn validate_f64_lores_hidim() {
+    validate::<f64>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `f64` sequence */
-#[test] fn validate_f64_lores_hidim() {
-    validate::<f64>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `u8` sequence
+#[test]
+fn validate_u8_lores_hidim() {
+    validate::<u8>(REF_SEQ_HI, Some(5));
 }
 
-/** Validate low-resolution high-dimensional `u8` sequence */
-#[test] fn validate_u8_lores_hidim() {
-    validate::<u8>(&REF_SEQ_HI, Some(5));
+/// Validate low-resolution high-dimensional `u16` sequence
+#[test]
+fn validate_u16_lores_hidim() {
+    validate::<u16>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `u16` sequence */
-#[test] fn validate_u16_lores_hidim() {
-    validate::<u16>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `u32` sequence
+#[test]
+fn validate_u32_lores_hidim() {
+    validate::<u32>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `u32` sequence */
-#[test] fn validate_u32_lores_hidim() {
-    validate::<u32>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `u64` sequence
+#[test]
+fn validate_u64_lores_hidim() {
+    validate::<u64>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `u64` sequence */
-#[test] fn validate_u64_lores_hidim() {
-    validate::<u64>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `u128` sequence
+#[test]
+fn validate_u128_lores_hidim() {
+    validate::<u128>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `u128` sequence */
-#[test] fn validate_u128_lores_hidim() {
-    validate::<u128>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `i8` sequence
+#[test]
+fn validate_i8_lores_hidim() {
+    validate::<i8>(REF_SEQ_HI, Some(5));
 }
 
-/** Validate low-resolution high-dimensional `i8` sequence */
-#[test] fn validate_i8_lores_hidim() {
-    validate::<i8>(&REF_SEQ_HI, Some(5));
+/// Validate low-resolution high-dimensional `i16` sequence
+#[test]
+fn validate_i16_lores_hidim() {
+    validate::<i16>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `i16` sequence */
-#[test] fn validate_i16_lores_hidim() {
-    validate::<i16>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `i32` sequence
+#[test]
+fn validate_i32_lores_hidim() {
+    validate::<i32>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `i32` sequence */
-#[test] fn validate_i32_lores_hidim() {
-    validate::<i32>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `i64` sequence
+#[test]
+fn validate_i64_lores_hidim() {
+    validate::<i64>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `i64` sequence */
-#[test] fn validate_i64_lores_hidim() {
-    validate::<i64>(&REF_SEQ_HI, Some(11));
+/// Validate low-resolution high-dimensional `i128` sequence
+#[test]
+fn validate_i128_lores_hidim() {
+    validate::<i128>(REF_SEQ_HI, Some(11));
 }
 
-/** Validate low-resolution high-dimensional `i128` sequence */
-#[test] fn validate_i128_lores_hidim() {
-    validate::<i128>(&REF_SEQ_HI, Some(11));
-}
-
-/** Validate low-resolution high-dimensional `i8` sequence */
-#[test] fn validate_i8_lores_hidim_skip() {
+/// Validate low-resolution high-dimensional `i8` sequence
+#[test]
+fn validate_i8_lores_hidim_skip() {
     for skip in 5..10 {
-        validate_skip::<i8>(&REF_SEQ_HI, Some(5), skip);
+        validate_skip::<i8>(REF_SEQ_HI, Some(5), skip);
     }
 }
 
-/** Validate low-resolution high-dimensional `i16` sequence */
-#[test] fn validate_i16_lores_hidim_skip() {
+/// Validate low-resolution high-dimensional `i16` sequence
+#[test]
+fn validate_i16_lores_hidim_skip() {
     for skip in 5..10 {
-        validate_skip::<i16>(&REF_SEQ_HI, Some(5), skip);
+        validate_skip::<i16>(REF_SEQ_HI, Some(5), skip);
     }
 }
 
-/** Validate low-resolution high-dimensional `i32` sequence */
-#[test] fn validate_i32_lores_hidim_skip() {
+/// Validate low-resolution high-dimensional `i32` sequence
+#[test]
+fn validate_i32_lores_hidim_skip() {
     for skip in 5..10 {
-        validate_skip::<i32>(&REF_SEQ_HI, Some(5), skip);
+        validate_skip::<i32>(REF_SEQ_HI, Some(5), skip);
     }
 }
 
-/** Validate low-resolution high-dimensional `i64` sequence */
-#[test] fn validate_i64_lores_hidim_skip() {
+/// Validate low-resolution high-dimensional `i64` sequence
+#[test]
+fn validate_i64_lores_hidim_skip() {
     for skip in 5..10 {
-        validate_skip::<i64>(&REF_SEQ_HI, Some(5), skip);
+        validate_skip::<i64>(REF_SEQ_HI, Some(5), skip);
     }
 }
 
-/** Validate low-resolution high-dimensional `i128` sequence */
-#[test] fn validate_i128_lores_hidim_skip() {
+/// Validate low-resolution high-dimensional `i128` sequence
+#[test]
+fn validate_i128_lores_hidim_skip() {
     for skip in 5..10 {
-        validate_skip::<i128>(&REF_SEQ_HI, Some(5), skip);
+        validate_skip::<i128>(REF_SEQ_HI, Some(5), skip);
     }
 }
 
-
-/**
- * Generates a sequence of type T and compares values to an externally generated
- * reference sequence (see 'test/data/ref_seq_*.tsv.gz')
- */
-fn validate<T>(ref_seq: &Vec<Vec<f32>>, resolution: Option<usize>) 
-    where T: SobolType + ToFloat + Display, T::IT: LossyFrom<u32>,
+/// Generates a sequence of type T and compares values to an externally generated
+/// reference sequence (see 'test/data/ref_seq_*.tsv.gz')
+fn validate<T>(ref_seq: &[&[f32]], resolution: Option<usize>)
+where
+    T: SobolType + ToFloat + Display,
+    T::IT: LossyFrom<u32>,
 {
     let dims: usize = ref_seq[0].len();
-    let params = JoeKuoD6::extended();
+    let params = JoeKuoD6::EXTENDED;
 
-    Sobol::<T>::new_with_resolution(dims, &params, resolution)
+    Sobol::<T>::new_with_resolution(dims, &params, resolution).unwrap()
         .map(|s| s.iter().map(|v| v.to_float()).collect::<Vec<_>>())
         .zip(ref_seq.iter().map(|p| p.to_vec()).collect::<Vec<_>>())
         .enumerate()
@@ -320,17 +354,17 @@ fn validate<T>(ref_seq: &Vec<Vec<f32>>, resolution: Option<usize>)
         });
 }
 
-/**
- * Generates a sequence of type T and compares values to an externally generated
- * reference sequence (see 'test/data/ref_seq_*.tsv.gz')
- */
-fn validate_skip<T>(ref_seq: &Vec<Vec<f32>>, resolution: Option<usize>, skip: usize) 
-    where T: SobolType + ToFloat + Display, T::IT: LossyFrom<u32>,
+/// Generates a sequence of type T and compares values to an externally generated
+/// reference sequence (see 'test/data/ref_seq_*.tsv.gz')
+fn validate_skip<T>(ref_seq: &[&[f32]], resolution: Option<usize>, skip: usize)
+where
+    T: SobolType + ToFloat + Display,
+    T::IT: LossyFrom<u32>,
 {
     let dims: usize = ref_seq[0].len();
-    let params = JoeKuoD6::extended();
+    let params = JoeKuoD6::EXTENDED;
 
-    Sobol::<T>::new_with_resolution(dims, &params, resolution)
+    Sobol::<T>::new_with_resolution(dims, &params, resolution).unwrap()
         .skip(skip)
         .map(|s| s.iter().map(|v| v.to_float()).collect::<Vec<_>>())
         .zip(ref_seq.iter().skip(skip).map(|p| p.to_vec()).collect::<Vec<_>>())
@@ -342,25 +376,19 @@ fn validate_skip<T>(ref_seq: &Vec<Vec<f32>>, resolution: Option<usize>, skip: us
         });
 }
 
-/** Generates string representation of a multi-dimensional point for display */
+/// Generates string representation of a multi-dimensional point for display
 fn point_str<T: Display>(point: &Vec<T>) -> String {
-    format!("[{}]", point.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(","))
+    format!(
+        "[{}]",
+        point
+            .iter()
+            .map(|v| v.to_string())
+            .collect::<Vec<_>>()
+            .join(",")
+    )
 }
 
-/** Loads reference sequence from gzipped tsv file */
-fn load_ref_seq(filename: &str) -> Vec<Vec<f32>> {
-    let mut file = File::open(filename)
-        .expect(&format!("Can't open reference sequence file: {}", filename));
-    let mut decoder = Decoder::new(&mut file).unwrap();
-    BufReader::new(&mut decoder)
-        .lines()
-        .map(|res| res.unwrap().split_whitespace()
-             .map(|v| v.parse::<f32>().unwrap())
-             .collect())
-        .collect()
-}
-
-/** Converts a generated value to canonical `f32` for comparison with reference sequence */
+/// Converts a generated value to canonical `f32` for comparison with reference sequence
 pub trait ToFloat {
     fn to_float(&self) -> f32;
 }
@@ -381,7 +409,6 @@ impl ToFloat for u8 {
     fn to_float(&self) -> f32 {
         (*self as f32) / 2f32.powi(8)
     }
-
 }
 
 impl ToFloat for u16 {

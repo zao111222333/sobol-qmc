@@ -1,21 +1,22 @@
 [package]
-name = "sobol"
-version = "1.0.3"
-authors = ["Weston Siegenthaler <westons@gmail.com>"]
+name = "sobol-qmc"
+version = "2.0.0"
+authors = ["Weston Siegenthaler <westons@gmail.com>", "Junzhuo Zhou <junzhuo22@ucla.edu>"]
 license = "BSD-3-Clause"
-edition = "2018"
+edition = "2024"
 readme = "README.md"
-homepage = "https://github.com/wsiegenthaler/sobol-rs"
-repository = "https://github.com/wsiegenthaler/sobol-rs"
-documentation = "https://docs.rs/sobol-rs"
+homepage = "https://github.com/zao111222333/sobol-qmc"
+repository = "https://github.com/zao111222333/sobol-qmc"
+documentation = "https://docs.rs/sobol-qmc"
 description = "A Sobol sequence generator for Rust"
 categories = ["algorithms","science","simulation"]
 keywords = ["sobol","low-discrepancy","mcmc","monte-carlo","quasirandom"]
 exclude = ["/tests","/benches","/examples","/.github"]
 
 [dependencies]
-libflate = "1"
 num-traits = "0.2"
 
-[dev-dependencies]
-lazy_static = "1.4"
+[build-dependencies]
+libflate = "2"
+quote = "1.0"
+proc-macro2 = "1.0"

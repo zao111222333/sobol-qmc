@@ -8,9 +8,7 @@ jobs:
     strategy:
       matrix:
         version:
-          - 1.33.0 # min supported version
           - stable
-          - beta
           - nightly
     steps:
     - uses: actions/checkout@v2
@@ -39,8 +37,8 @@ jobs:
       run: cargo build --verbose
       env:
         RUST_BACKTRACE: 1
-    - name: Run cargo-tarpaulin
-      uses: actions-rs/tarpaulin@v0.1
-      with:
-        version: '0.10.2'
-        args: '--coveralls ${{ secrets.COVERALLS_TOKEN }} -- --test-threads 1'
+    # - name: Run cargo-tarpaulin
+    #   uses: actions-rs/tarpaulin@v0.1
+    #   with:
+    #     version: '0.10.2'
+    #     args: '--coveralls ${{ secrets.COVERALLS_TOKEN }} -- --test-threads 1'
