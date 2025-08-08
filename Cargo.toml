@@ -1,6 +1,6 @@
 [package]
 name = "sobol-qmc"
-version = "2.0.0"
+version = "2.1.0"
 authors = ["Weston Siegenthaler <westons@gmail.com>", "Junzhuo Zhou <junzhuo22@ucla.edu>"]
 license = "BSD-3-Clause"
 edition = "2024"
@@ -15,6 +15,7 @@ include = ["/src", "build.rs", "README.md"]
 
 [dependencies]
 num-traits = "0.2"
+statrs = "0.18"
 
 [build-dependencies]
 libflate = "2"

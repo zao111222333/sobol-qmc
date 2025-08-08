@@ -91,6 +91,7 @@ where
     T: SobolType,
     T::IT: LossyFrom<u32>,
     Sobol<T>: Clone,
+    LinearRender: Render<T>,
 {
     let sobol = Sobol::<T>::new(DIMS, &JoeKuoD6::EXTENDED).unwrap();
     b.iter(|| black_box(sobol.clone().skip(S).take(N).collect::<Vec<_>>()));

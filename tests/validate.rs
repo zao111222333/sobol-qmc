@@ -339,11 +339,12 @@ fn validate<T>(ref_seq: &[&[f32]], resolution: Option<usize>)
 where
     T: SobolType + ToFloat + Display,
     T::IT: LossyFrom<u32>,
+    LinearRender: Render<T>,
 {
     let dims: usize = ref_seq[0].len();
     let params = JoeKuoD6::EXTENDED;
 
-    Sobol::<T>::new_with_resolution(dims, &params, resolution).unwrap()
+    Sobol::<T>::new_with_resolution(dims, &params, resolution,LinearRender).unwrap()
         .map(|s| s.iter().map(|v| v.to_float()).collect::<Vec<_>>())
         .zip(ref_seq.iter().map(|p| p.to_vec()).collect::<Vec<_>>())
         .enumerate()
@@ -360,11 +361,12 @@ fn validate_skip<T>(ref_seq: &[&[f32]], resolution: Option<usize>, skip: usize)
 where
     T: SobolType + ToFloat + Display,
     T::IT: LossyFrom<u32>,
+    LinearRender: Render<T>,
 {
     let dims: usize = ref_seq[0].len();
     let params = JoeKuoD6::EXTENDED;
 
-    Sobol::<T>::new_with_resolution(dims, &params, resolution).unwrap()
+    Sobol::<T>::new_with_resolution(dims, &params, resolution,LinearRender).unwrap()
         .skip(skip)
         .map(|s| s.iter().map(|v| v.to_float()).collect::<Vec<_>>())
         .zip(ref_seq.iter().skip(skip).map(|p| p.to_vec()).collect::<Vec<_>>())

@@ -1,18 +1,21 @@
 pub mod params;
 mod type_support;
 
-use core::fmt;
-use core::iter::Iterator;
-use core::ops::{AddAssign, BitXorAssign};
+use core::{
+    fmt,
+    ops::{AddAssign, BitXorAssign},
+};
 use num_traits::{Bounded, One, PrimInt, Unsigned, Zero};
+use statrs::distribution::Normal;
 
 /// A low-discrepancy Sobol sequence generator
 #[derive(Clone)]
-pub struct Sobol<T: SobolType> {
+pub struct Sobol<T: SobolType, R: Render<T> = LinearRender> {
     pub dims: usize,
     pub resolution: usize,
     dir_vals: Vec<Vec<T::IT>>,
     previous: Option<Vec<T::IT>>,
+    render: R,
     pub count: T::IT,
     pub max_len: T::IT,
 }
@@ -20,27 +23,36 @@ pub struct Sobol<T: SobolType> {
 #[derive(Debug, Clone, Copy)]
 pub enum SobolError {
     MaxDim { dims: usize, max_dims: usize },
+    RenderDim { dims: usize, render_dims: usize },
 }
 impl fmt::Display for SobolError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::MaxDim { dims, max_dims } => write!(
                 f,
-                "Sobol sequence support a maximum of {max_dims} dimensions, but was configured for {dims}."
+                "Sobol sequence supports a maximum of {max_dims} dimensions, but was configured for {dims}."
+            ),
+            Self::RenderDim { dims, render_dims } => write!(
+                f,
+                "Render supports a {render_dims} dimensions, but Sobol was configured for {dims}."
             ),
         }
     }
 }
 
-impl<T: SobolType> Sobol<T> {
+impl<T: SobolType> Sobol<T, LinearRender>
+where
+    LinearRender: Render<T>,
+{
     /// Constructs a new sequence
     pub fn new<P, Param: SobolParams<P>>(dims: usize, params: &Param) -> Result<Self, SobolError>
     where
         T::IT: LossyFrom<P>,
     {
-        Self::new_with_resolution::<P, Param>(dims, params, None)
+        Self::new_with_resolution::<P, Param>(dims, params, None, LinearRender)
     }
-
+}
+impl<T: SobolType, R: Render<T>> Sobol<T, R> {
     /// Constructs a new sequence of given resolution. Resolution is the number of bits used in the
     /// computation of the sequence and by default is the size of the underlying type. This
     /// constructor is useful for reducing the number of cycles necessary to generate each point when the
@@ -49,6 +61,7 @@ impl<T: SobolType> Sobol<T> {
         dims: usize,
         params: &Param,
         resolution: Option<usize>,
+        render: R,
     ) -> Result<Self, SobolError>
     where
         T::IT: LossyFrom<P>,
@@ -59,6 +72,11 @@ impl<T: SobolType> Sobol<T> {
         let max_dims = params.max_dims();
         if dims > params.max_dims() {
             return Err(SobolError::MaxDim { dims, max_dims });
+        }
+        if let Some(render_dims) = render.support_dims() {
+            if dims != render_dims {
+                return Err(SobolError::RenderDim { dims, render_dims });
+            }
         }
 
         let dir_values = Self::init_direction_vals::<P, Param>(dims, res, params);
@@ -73,6 +91,7 @@ impl<T: SobolType> Sobol<T> {
             count: T::IT::zero(),
             max_len: T::IT::max_value() >> (T::IT::BITS - res),
             previous: None,
+            render,
         })
     }
 
@@ -132,7 +151,7 @@ impl<T: SobolType> Sobol<T> {
     }
 }
 
-impl<T: SobolType> Iterator for Sobol<T> {
+impl<T: SobolType, R: Render<T>> Iterator for Sobol<T, R> {
     type Item = Vec<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -150,7 +169,11 @@ impl<T: SobolType> Iterator for Sobol<T> {
                 }
             };
 
-            let next_render: Vec<T> = next.iter().map(|v| T::render(*v)).collect();
+            let next_render: Vec<T> = next
+                .iter()
+                .enumerate()
+                .map(|(dim, val)| self.render.render(dim, *val))
+                .collect();
 
             self.count += T::IT::one();
             self.previous = Some(next);
@@ -187,19 +210,31 @@ impl<T: SobolType> Iterator for Sobol<T> {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct LinearRender;
+#[derive(Debug, Clone, Copy)]
+pub struct GaussianRender(pub Normal);
+#[derive(Debug, Clone)]
+pub struct MultiDimGaussianRender(pub Vec<Normal>);
+pub trait Render<T: SobolType>: Clone {
+    /// Converts internal values to those expected by the user. This usually
+    /// involves casting and, for float values, scaling to the range [0,1).
+    fn render(&self, dim: usize, val: <T as SobolType>::IT) -> T;
+
+    fn support_dims(&self) -> Option<usize> {
+        None
+    }
+}
+
 /// The main type parameter for the `Sobol` iterator. This defines the concrete `InternalType`
 /// to be used internally, as well as other properties necessary for sequence generation.
 pub trait SobolType: Sized + fmt::Display {
     /// The unsigned integer type used internally to compute sequence values.
     type IT: InternalType;
 
-    /// Converts internal values to those expected by the user. This usually
-    /// involves casting and, for float values, scaling to the range [0,1).     
-    fn render(val: Self::IT) -> Self;
-
     /// The maximum number of bits this type can support. By default, this is
     /// number of bits in the underlying `InternalType`, but it may be less
-    /// in some cases (e.g. floats are limited by the size of their significand).     
+    /// in some cases (e.g. floats are limited by the size of their significand).
     const MAX_RESOLUTION: usize = Self::IT::BITS;
 }
 
