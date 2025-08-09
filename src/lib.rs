@@ -10,7 +10,7 @@ use statrs::distribution::Normal;
 
 /// A low-discrepancy Sobol sequence generator
 #[derive(Clone)]
-pub struct Sobol<T: SobolType, R: Render<T> = LinearRender> {
+pub struct Sobol<T: SobolType, R: Render<T> = UnitRender> {
     pub dims: usize,
     pub resolution: usize,
     dir_vals: Vec<Vec<T::IT>>,
@@ -40,16 +40,16 @@ impl fmt::Display for SobolError {
     }
 }
 
-impl<T: SobolType> Sobol<T, LinearRender>
+impl<T: SobolType> Sobol<T, UnitRender>
 where
-    LinearRender: Render<T>,
+    UnitRender: Render<T>,
 {
     /// Constructs a new sequence
     pub fn new<P, Param: SobolParams<P>>(dims: usize, params: &Param) -> Result<Self, SobolError>
     where
         T::IT: LossyFrom<P>,
     {
-        Self::new_with_resolution::<P, Param>(dims, params, None, LinearRender)
+        Self::new_with_resolution::<P, Param>(dims, params, None, UnitRender)
     }
 }
 impl<T: SobolType, R: Render<T>> Sobol<T, R> {
@@ -211,7 +211,7 @@ impl<T: SobolType, R: Render<T>> Iterator for Sobol<T, R> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct LinearRender;
+pub struct UnitRender;
 #[derive(Debug, Clone, Copy)]
 pub struct GaussianRender(pub Normal);
 #[derive(Debug, Clone)]

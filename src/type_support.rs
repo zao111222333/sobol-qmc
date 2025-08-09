@@ -1,5 +1,5 @@
 use crate::{
-    GaussianRender, InternalType, LinearRender, LossyFrom, MultiDimGaussianRender, Render,
+    GaussianRender, InternalType, UnitRender, LossyFrom, MultiDimGaussianRender, Render,
     SobolType,
 };
 use statrs::distribution::ContinuousCDF as _;
@@ -7,24 +7,26 @@ use statrs::distribution::ContinuousCDF as _;
 /// SobolType implementation for 32-bit floating-point values
 impl SobolType for f32 {
     type IT = u32;
-    const MAX_RESOLUTION: usize = 24; // IEEE-754 "binary32" significand = 24 bits
+    /// IEEE-754 "binary32" significand = 24 bits
+    const MAX_RESOLUTION: usize = 24;
 }
-impl Render<f32> for LinearRender {
+impl Render<f32> for UnitRender {
     fn render(&self, _: usize, val: u32) -> f32 {
+        // 4294967296 <-> u32::MAX + 1
         (val as f32) / 4_294_967_296_f32
     }
 }
 impl Render<f32> for GaussianRender {
     fn render(&self, dim: usize, val: u32) -> f32 {
         self.0
-            .inverse_cdf(<LinearRender as Render<f32>>::render(&LinearRender, dim, val) as f64)
+            .inverse_cdf(<UnitRender as Render<f32>>::render(&UnitRender, dim, val) as f64)
             as f32
     }
 }
 impl Render<f32> for MultiDimGaussianRender {
     fn render(&self, dim: usize, val: u32) -> f32 {
         self.0[dim]
-            .inverse_cdf(<LinearRender as Render<f32>>::render(&LinearRender, dim, val) as f64)
+            .inverse_cdf(<UnitRender as Render<f32>>::render(&UnitRender, dim, val) as f64)
             as f32
     }
     fn support_dims(&self) -> Option<usize> {
@@ -35,17 +37,19 @@ impl Render<f32> for MultiDimGaussianRender {
 /// SobolType implementation for 64-bit floating-point values
 impl SobolType for f64 {
     type IT = u64;
-    const MAX_RESOLUTION: usize = 53; // IEEE-754 "binary64" significand = 53 bits
+    /// IEEE-754 "binary64" significand = 53 bits
+    const MAX_RESOLUTION: usize = 53;
 }
-impl Render<f64> for LinearRender {
+impl Render<f64> for UnitRender {
     fn render(&self, _: usize, val: u64) -> f64 {
+        // 18446744073709551616 <-> u64::MAX + 1
         (val as f64) / 18_446_744_073_709_551_616_f64
     }
 }
 impl Render<f64> for GaussianRender {
     fn render(&self, dim: usize, val: u64) -> f64 {
-        self.0.inverse_cdf(<LinearRender as Render<f64>>::render(
-            &LinearRender,
+        self.0.inverse_cdf(<UnitRender as Render<f64>>::render(
+            &UnitRender,
             dim,
             val,
         ))
@@ -53,8 +57,8 @@ impl Render<f64> for GaussianRender {
 }
 impl Render<f64> for MultiDimGaussianRender {
     fn render(&self, dim: usize, val: u64) -> f64 {
-        self.0[dim].inverse_cdf(<LinearRender as Render<f64>>::render(
-            &LinearRender,
+        self.0[dim].inverse_cdf(<UnitRender as Render<f64>>::render(
+            &UnitRender,
             dim,
             val,
         ))
@@ -68,7 +72,7 @@ impl Render<f64> for MultiDimGaussianRender {
 impl SobolType for u8 {
     type IT = u8;
 }
-impl Render<u8> for LinearRender {
+impl Render<u8> for UnitRender {
     fn render(&self, _: usize, val: u8) -> u8 {
         val
     }
@@ -78,7 +82,7 @@ impl Render<u8> for LinearRender {
 impl SobolType for u16 {
     type IT = u16;
 }
-impl Render<u16> for LinearRender {
+impl Render<u16> for UnitRender {
     fn render(&self, _: usize, val: u16) -> u16 {
         val
     }
@@ -88,7 +92,7 @@ impl Render<u16> for LinearRender {
 impl SobolType for u32 {
     type IT = u32;
 }
-impl Render<u32> for LinearRender {
+impl Render<u32> for UnitRender {
     fn render(&self, _: usize, val: u32) -> u32 {
         val
     }
@@ -98,7 +102,7 @@ impl Render<u32> for LinearRender {
 impl SobolType for u64 {
     type IT = u64;
 }
-impl Render<u64> for LinearRender {
+impl Render<u64> for UnitRender {
     fn render(&self, _: usize, val: u64) -> u64 {
         val
     }
@@ -108,7 +112,7 @@ impl Render<u64> for LinearRender {
 impl SobolType for u128 {
     type IT = u128;
 }
-impl Render<u128> for LinearRender {
+impl Render<u128> for UnitRender {
     fn render(&self, _: usize, val: u128) -> u128 {
         val
     }
@@ -118,7 +122,7 @@ impl Render<u128> for LinearRender {
 impl SobolType for i8 {
     type IT = u8;
 }
-impl Render<i8> for LinearRender {
+impl Render<i8> for UnitRender {
     fn render(&self, _: usize, val: u8) -> i8 {
         (val ^ 0x80) as i8
     }
@@ -128,7 +132,7 @@ impl Render<i8> for LinearRender {
 impl SobolType for i16 {
     type IT = u16;
 }
-impl Render<i16> for LinearRender {
+impl Render<i16> for UnitRender {
     fn render(&self, _: usize, val: u16) -> i16 {
         (val ^ 0x8000) as i16
     }
@@ -138,7 +142,7 @@ impl Render<i16> for LinearRender {
 impl SobolType for i32 {
     type IT = u32;
 }
-impl Render<i32> for LinearRender {
+impl Render<i32> for UnitRender {
     fn render(&self, _: usize, val: u32) -> i32 {
         (val ^ 0x8000_0000) as i32
     }
@@ -148,7 +152,7 @@ impl Render<i32> for LinearRender {
 impl SobolType for i64 {
     type IT = u64;
 }
-impl Render<i64> for LinearRender {
+impl Render<i64> for UnitRender {
     fn render(&self, _: usize, val: u64) -> i64 {
         (val ^ 0x8000_0000_0000_0000) as i64
     }
@@ -158,7 +162,7 @@ impl Render<i64> for LinearRender {
 impl SobolType for i128 {
     type IT = u128;
 }
-impl Render<i128> for LinearRender {
+impl Render<i128> for UnitRender {
     fn render(&self, _: usize, val: u128) -> i128 {
         (val ^ 0x8000_0000_0000_0000_0000_0000_0000_0000) as i128
     }

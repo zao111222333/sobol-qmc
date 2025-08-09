@@ -331,7 +331,7 @@ dependencies = [
 
 [[package]]
 name = "sobol-qmc"
-version = "2.1.0"
+version = "2.2.0"
 dependencies = [
  "libflate",
  "num-traits",
