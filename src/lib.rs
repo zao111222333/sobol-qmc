@@ -1,12 +1,11 @@
 pub mod params;
 mod type_support;
-
 use core::{
     fmt,
     ops::{AddAssign, BitXorAssign},
 };
 use num_traits::{Bounded, One, PrimInt, Unsigned, Zero};
-use statrs::distribution::Normal;
+pub use statrs::distribution::Normal;
 
 /// A low-discrepancy Sobol sequence generator
 #[derive(Clone)]
