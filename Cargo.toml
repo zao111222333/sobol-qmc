@@ -1,6 +1,6 @@
 [package]
 name = "sobol-qmc"
-version = "2.4.0"
+version = "2.5.0"
 authors = ["Weston Siegenthaler <westons@gmail.com>", "Junzhuo Zhou <junzhuo22@ucla.edu>"]
 license = "BSD-3-Clause"
 edition = "2024"

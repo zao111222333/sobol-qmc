@@ -4,8 +4,9 @@ use core::{
     fmt,
     ops::{AddAssign, BitXorAssign},
 };
+pub use statrs;
 use num_traits::{Bounded, One, PrimInt, Unsigned, Zero};
-pub use statrs::distribution::Normal;
+use statrs::distribution::Normal;
 
 /// A low-discrepancy Sobol sequence generator
 #[derive(Clone)]
