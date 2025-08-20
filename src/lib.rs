@@ -20,24 +20,14 @@ pub struct Sobol<T: SobolType, R: Render<T> = UnitRender> {
     pub max_len: T::IT,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, thiserror::Error)]
 pub enum SobolError {
+    #[error(
+        "Sobol sequence supports a maximum of {max_dims} dimensions, but was configured for {dims}."
+    )]
     MaxDim { dims: usize, max_dims: usize },
+    #[error("Render supports a {render_dims} dimensions, but Sobol was configured for {dims}.")]
     RenderDim { dims: usize, render_dims: usize },
-}
-impl fmt::Display for SobolError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::MaxDim { dims, max_dims } => write!(
-                f,
-                "Sobol sequence supports a maximum of {max_dims} dimensions, but was configured for {dims}."
-            ),
-            Self::RenderDim { dims, render_dims } => write!(
-                f,
-                "Render supports a {render_dims} dimensions, but Sobol was configured for {dims}."
-            ),
-        }
-    }
 }
 
 impl<T: SobolType> Sobol<T, UnitRender>

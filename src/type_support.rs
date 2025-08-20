@@ -1,6 +1,5 @@
 use crate::{
-    GaussianRender, InternalType, UnitRender, LossyFrom, MultiDimGaussianRender, Render,
-    SobolType,
+    GaussianRender, InternalType, LossyFrom, MultiDimGaussianRender, Render, SobolType, UnitRender,
 };
 use statrs::distribution::ContinuousCDF as _;
 
@@ -25,8 +24,7 @@ impl Render<f32> for GaussianRender {
 }
 impl Render<f32> for MultiDimGaussianRender {
     fn render(&self, dim: usize, val: u32) -> f32 {
-        self.0[dim]
-            .inverse_cdf(<UnitRender as Render<f32>>::render(&UnitRender, dim, val) as f64)
+        self.0[dim].inverse_cdf(<UnitRender as Render<f32>>::render(&UnitRender, dim, val) as f64)
             as f32
     }
     fn support_dims(&self) -> Option<usize> {
@@ -48,20 +46,13 @@ impl Render<f64> for UnitRender {
 }
 impl Render<f64> for GaussianRender {
     fn render(&self, dim: usize, val: u64) -> f64 {
-        self.0.inverse_cdf(<UnitRender as Render<f64>>::render(
-            &UnitRender,
-            dim,
-            val,
-        ))
+        self.0
+            .inverse_cdf(<UnitRender as Render<f64>>::render(&UnitRender, dim, val))
     }
 }
 impl Render<f64> for MultiDimGaussianRender {
     fn render(&self, dim: usize, val: u64) -> f64 {
-        self.0[dim].inverse_cdf(<UnitRender as Render<f64>>::render(
-            &UnitRender,
-            dim,
-            val,
-        ))
+        self.0[dim].inverse_cdf(<UnitRender as Render<f64>>::render(&UnitRender, dim, val))
     }
     fn support_dims(&self) -> Option<usize> {
         Some(self.0.len())
