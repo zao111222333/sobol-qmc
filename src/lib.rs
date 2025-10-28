@@ -4,9 +4,10 @@ use core::{
     fmt,
     ops::{AddAssign, BitXorAssign},
 };
-pub use statrs;
 use num_traits::{Bounded, One, PrimInt, Unsigned, Zero};
+pub use statrs;
 use statrs::distribution::Normal;
+use std::iter::repeat_n;
 
 /// A low-discrepancy Sobol sequence generator
 #[derive(Clone)]
@@ -14,7 +15,7 @@ pub struct Sobol<T: SobolType, R: Render<T> = UnitRender> {
     pub dims: usize,
     pub resolution: usize,
     dir_vals: Vec<Vec<T::IT>>,
-    previous: Option<Vec<T::IT>>,
+    previous: Vec<T::IT>,
     render: R,
     pub count: T::IT,
     pub max_len: T::IT,
@@ -80,7 +81,7 @@ impl<T: SobolType, R: Render<T>> Sobol<T, R> {
             dir_vals: dir_values,
             count: T::IT::zero(),
             max_len: T::IT::max_value() >> (T::IT::BITS - res),
-            previous: None,
+            previous: Vec::with_capacity(dims),
             render,
         })
     }
@@ -139,59 +140,46 @@ impl<T: SobolType, R: Render<T>> Sobol<T, R> {
     pub fn rightmost_zero(n: T::IT) -> usize {
         (n ^ T::IT::max_value()).trailing_zeros() as usize
     }
+
+    /// Update internal for each `next()`
+    #[inline]
+    pub fn update(&mut self) {
+        if self.previous.is_empty() {
+            self.previous.extend(repeat_n(T::IT::zero(), self.dims));
+        } else {
+            let a = self.count - T::IT::one();
+            let c = Self::rightmost_zero(a);
+            for (p, dir) in self.dir_vals[c].iter().zip(&mut self.previous) {
+                *dir = *p ^ *dir;
+            }
+        }
+        self.count += T::IT::one();
+    }
 }
 
 impl<T: SobolType, R: Render<T>> Iterator for Sobol<T, R> {
     type Item = Vec<T>;
-
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.count < self.max_len {
-            let next = match &self.previous {
-                None => vec![T::IT::zero(); self.dims],
-                Some(previous) => {
-                    let a = self.count - T::IT::one();
-                    let c = Self::rightmost_zero(a);
-                    self.dir_vals[c]
-                        .iter()
-                        .zip(previous)
-                        .map(|(p, dir)| *p ^ *dir)
-                        .collect::<Vec<T::IT>>()
-                }
-            };
+            self.update();
 
-            let next_render: Vec<T> = next
+            let next_render: Vec<T> = self
+                .previous
                 .iter()
                 .enumerate()
                 .map(|(dim, val)| self.render.render(dim, *val))
                 .collect();
-
-            self.count += T::IT::one();
-            self.previous = Some(next);
-
             Some(next_render)
         } else {
             None
         }
     }
-
+    #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         for _ in 0..n {
             if self.count < self.max_len {
-                let next = match &self.previous {
-                    None => vec![T::IT::zero(); self.dims],
-                    Some(previous) => {
-                        let a = self.count - T::IT::one();
-                        let c = Self::rightmost_zero(a);
-                        self.dir_vals[c]
-                            .iter()
-                            .zip(previous)
-                            .map(|(p, dir)| *p ^ *dir)
-                            .collect::<Vec<T::IT>>()
-                    }
-                };
-
-                self.count += T::IT::one();
-                self.previous = Some(next);
+                self.update();
             } else {
                 break;
             }
