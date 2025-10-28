@@ -155,6 +155,13 @@ impl<T: SobolType, R: Render<T>> Sobol<T, R> {
         }
         self.count += T::IT::one();
     }
+    #[inline]
+    pub fn render_next(&self) -> impl Iterator<Item = T> {
+        self.previous
+            .iter()
+            .enumerate()
+            .map(|(dim, val)| self.render.render(dim, *val))
+    }
 }
 
 impl<T: SobolType, R: Render<T>> Iterator for Sobol<T, R> {
@@ -163,14 +170,7 @@ impl<T: SobolType, R: Render<T>> Iterator for Sobol<T, R> {
     fn next(&mut self) -> Option<Self::Item> {
         if self.count < self.max_len {
             self.update();
-
-            let next_render: Vec<T> = self
-                .previous
-                .iter()
-                .enumerate()
-                .map(|(dim, val)| self.render.render(dim, *val))
-                .collect();
-            Some(next_render)
+            Some(self.render_next().collect())
         } else {
             None
         }
